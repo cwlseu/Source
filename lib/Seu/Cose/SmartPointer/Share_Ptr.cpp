@@ -13,7 +13,14 @@ namespace Seu{
 		template<typename T>
 		Seu::Cose::Share_Ptr<T>::Share_Ptr(const Share_Ptr& rhs)
 		{
-			pn++;
+			if(*this==rhs)
+			{
+				return ;
+			}
+			++rhs.pn;
+			this->clean();
+			this->pn = rhs.use_count();
+			this->px = rhs.get();
 		}
 		template<typename T>
 		Seu::Cose::Share_Ptr<T>& Seu::Cose::Share_Ptr<T>::operator=(const Share_Ptr<T>& rhs)
@@ -22,7 +29,8 @@ namespace Seu{
 			{
 				return (*this);
 			}
-			 ++rhs.pn;
+			++rhs.pn;
+			this->clean();
 			this->pn = rhs.use_count();
 			this->px = rhs.get();
 			return (*this);
@@ -35,17 +43,17 @@ namespace Seu{
 				return (*this);
 			}
 			 ++rhs.pn;
+			this->clean();
 			this->pn = rhs.use_count();
 			this->px = rhs.get();
 			return (*this);
-			
-			
 		}
 		template<typename T>
 		bool Seu::Cose::Share_Ptr<T>::operator==(const Share_Ptr<T>& rhs)
 		{
 			if(rhs.get()==this->px 
-			&& rhs.use_count()==this->pn)
+			&& rhs.use_count()==this->pn
+			&& *this==rhs)
 				return true;
 			return false;
 		}
@@ -106,7 +114,6 @@ namespace Seu{
 		template<typename T>
 		void Seu::Cose::Share_Ptr<T>::clean()
 		{
-
 			if(--(this->pn)<=0)
 			{
 				delete px;
@@ -121,10 +128,19 @@ int main(int argc, char const *argv[])
 {
     int* test = new int(3);
 	Seu::Cose::Share_Ptr<int> share(test);
+	std::cout<<share.use_count()<<" \n";
 	Seu::Cose::Share_Ptr<int> share2(share);
+	std::cout<<share.use_count()<<" \n"
+			<<share2.use_count()<<"\n";
 	Seu::Cose::Share_Ptr<int> share3(new int(1));
 	share3 = share2;
+	std::cout<<"After assignment:\n";
 	std::cout<<share.use_count()<<" \n"
+	<<share2.use_count()<<"\n"
+	<<share3.use_count()<<"\n";
+	share.~Share_Ptr();
+	std::cout<<"After Destroy share\n";
+	std::cout
 	<<share2.use_count()<<"\n"
 	<<share3.use_count()<<"\n";
 	return 0;

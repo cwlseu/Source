@@ -1,4 +1,4 @@
-#include "CSingleton.h"
+#include "../DesignPattern/CSingleton.h"
 #include <iostream>
 int main(int argc, char const *argv[])
 {

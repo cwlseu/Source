@@ -22,7 +22,7 @@ namespace Seu{
 
 		private:
 			    T * px;                     // contained pointer
-    			shared_count pn;    // reference counter
+    			mutable shared_count pn;    // reference counter
     			void clean();
 		};
 		
